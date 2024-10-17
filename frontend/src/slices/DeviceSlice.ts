@@ -60,7 +60,8 @@ export const getRegCall = createAsyncThunk(
       const response = await axios.get<CallState>(
         "/api/CallDevice/GetRegCallDevice"
       );
-      console.log(response)
+      console.log('----------------')
+      console.log('--- response data === ', response.data)
       return response.data;
     } catch (error) {
       return rejectWithValue("Failed to fetch device data");

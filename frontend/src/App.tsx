@@ -18,7 +18,13 @@ function App() {
 
   useInterval(()=>{
     dispatch(getRegCall())
-  }, 1000)
+  }, 1000);
+
+  React.useEffect(()=>{
+    console.log('regCall === ', regCall.call);
+    setReg(regCall.call);
+  }, [regCall]);
+
   React.useEffect(()=>{
     setReg(regCall ? regCall : new CallBase());
     //dispatch(getDeviceAll());
@@ -36,7 +42,7 @@ function App() {
           children: [
             { path: "/", element: <Main /> },
             { path: "/robot", element: <Robot /> },
-            { path: "/bell", element: <Bell num={reg}/> },
+            { path: "/bell", element: <Bell callBase={reg}/> },
           ],
         },
         // { path: "/*", element: <Navigate to="/serving" /> },

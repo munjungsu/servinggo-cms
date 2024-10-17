@@ -33,7 +33,7 @@ let dummyBell = [
   { id: "g", table: "7", check: false },
   { id: "h", table: "8", check: false },
 ];
-const Bell = (props : {num : CallBase}) => {
+const Bell = (props : {callBase : CallBase}) => {
   const [bells, setBells] = React.useState<bells[]>(dummyBell);
   const [alertProps, setAlertProps] = React.useState<DialogProps>({
     open: false,
