@@ -1,0 +1,42 @@
+{
+  "name": "servinggo2.0",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "./lock_top_display.sh && node backend/server.js",
+    "server": "nodemon backend/server.js",
+    "client": "npm start --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install-client": "npm install --prefix frontend",
+    "build-client": "npm run build --prefix frontend",
+    "heroku-postbuild": "npm run install-client && npm run build-client"
+  },
+  "author": "Jung Soo",
+  "private": true,
+  "license": "UNLICENSED",
+  "dependencies": {
+    "app-root-path": "^3.1.0",
+    "async-mutex": "^0.3.2",
+    "colors": "^1.4.0",
+    "dayjs": "^1.11.10",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.3",
+    "fs": "^0.0.1-security",
+    "js-yaml": "^4.1.0",
+    "morgan": "^1.10.0",
+    "ping": "^0.4.4",
+    "pingus": "^1.2.4",
+    "rosnodejs": "^3.0.2",
+    "winston": "^3.13.0",
+    "winston-daily-rotate-file": "^5.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^7.2.0",
+    "nodemon": "^2.0.16"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "./frontend"
+    ]
+  }
+}
