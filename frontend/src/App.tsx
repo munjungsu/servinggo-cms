@@ -21,16 +21,16 @@ function App() {
   }, 1000);
 
   React.useEffect(()=>{
-    console.log('regCall === ', regCall.call);
-    setReg(regCall.call);
+    //console.log('regCall === ', regCall.call);
+    //setReg(regCall.call);
   }, [regCall]);
 
   React.useEffect(()=>{
-    setReg(regCall ? regCall : new CallBase());
-    //dispatch(getDeviceAll());
+    //setReg(regCall ? regCall : new CallBase());
+    dispatch(getDeviceAll());
   }, [])
-  //console.log(regCall)
-  //console.log(callList)
+  console.log(regCall)
+  console.log(callList)
  const num = 1
   return (
     <div className="App">
@@ -42,7 +42,7 @@ function App() {
           children: [
             { path: "/", element: <Main /> },
             { path: "/robot", element: <Robot /> },
-            { path: "/bell", element: <Bell callBase={reg}/> },
+            { path: "/bell", element: <Bell /> },
           ],
         },
         // { path: "/*", element: <Navigate to="/serving" /> },

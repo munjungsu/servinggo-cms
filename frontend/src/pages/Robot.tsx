@@ -3,7 +3,7 @@ import { useTheme, Box, Button } from "@mui/material";
 import RobotCard from '../components/RobotCard';
 import type { Card } from '../types/types';
 import { useAppDispatch, useAppSelector } from '../store';
-import { getDeviceAll, getRegCall, removeCall, upDateCall } from '../slices/DeviceSlice';
+import { getDeviceAll, getRegCall } from '../slices/DeviceSlice';
 let RobotCardData: Card[] = [
   {id : 1, name: "RobotA", calls: []},
   {id : 2, name: "RobotB", calls: []},
@@ -44,7 +44,7 @@ const Robot = () => {
     const dispatch = useAppDispatch();
     const [cardData, setCardData] = React.useState<Card[]>(RobotCardData)
     //const [callData, setCallData] = React.useState<Call>(new Call())
-    const { callList, regCall, removeCall } = useAppSelector((state)=>state.device);
+    const { callList, regCall } = useAppSelector((state)=>state.device);
     let dummyCall = [
        "123","456","789","101","102","103","104","105","106",
        "107","108","109","110","110","111","112","113","114",

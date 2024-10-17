@@ -17,7 +17,7 @@ import {
 } from "../constants/icons";
 import type { DialogProps } from "../types/types";
 import { AlertDialog } from "../components/AlertDialog";
-import { CallBase } from "../types/servinggo-protocol ";
+import { CallBase, Call } from "../types/servinggo-protocol ";
 interface bells {
   id: string;
   table: string;
@@ -33,7 +33,7 @@ let dummyBell = [
   { id: "g", table: "7", check: false },
   { id: "h", table: "8", check: false },
 ];
-const Bell = (props : {callBase : CallBase}) => {
+const Bell = () => {
   const [bells, setBells] = React.useState<bells[]>(dummyBell);
   const [alertProps, setAlertProps] = React.useState<DialogProps>({
     open: false,
@@ -43,7 +43,7 @@ const Bell = (props : {callBase : CallBase}) => {
 
     },
   })
- console.log(props)
+
   const sign = true;
   const handleCheck = (id: string) => (e: ChangeEvent<HTMLInputElement>) => {
     setBells((bells) =>

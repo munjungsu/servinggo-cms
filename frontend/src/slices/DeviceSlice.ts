@@ -20,22 +20,22 @@ import { Call, CallBase } from "../types/servinggo-protocol ";
 // }
 interface CallState {
   callList: Call[];
-  call? : CallBase
-  regCall?: any;
-  updateCall?: Iupdate;
-  removeCall?: Iremove;
+  //call? : CallBase
+  regCall?:  CallBase;
+  // updateCall?: Iupdate;
+  // removeCall?: Iremove;
   loading: boolean;
 }
-interface Iupdate {
-  updateCall: Call;
-}
-interface Iremove {
-  removeCall: number;
-}
+// interface Iupdate {
+//   updateCall: Call;
+// }
+// interface Iremove {
+//   removeCall: number;
+// }
 
 const initialState: CallState = {
   callList: [],
-  regCall: "",
+  regCall: new CallBase(),
   loading: false,
 };
 //전체 콜 목록 조회
@@ -57,7 +57,7 @@ export const getRegCall = createAsyncThunk(
   "reg_device/get",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get<CallState>(
+      const response = await axios.get<CallBase>(
         "/api/CallDevice/GetRegCallDevice"
       );
       console.log('----------------')
@@ -83,38 +83,38 @@ export const setRegCall = createAsyncThunk(
   }
 );
 //update 콜
-export const upDateCall = createAsyncThunk(
-  "reg_device/update",
-  async (payload: Iupdate[], { rejectWithValue }) => {
-    try {
-      const response = await axios.post<Iupdate>(
-        "/api/CallDevice/UpdateCallDevice",
-        {
-          ...payload,
-        }
-      );
-      return response.data;
-    } catch (error) {
-      return rejectWithValue("Failed to fetch device data");
-    }
-  }
-);
-export const removeCall = createAsyncThunk(
-  "reg_device/remove",
-  async (payload: Iremove, { rejectWithValue }) => {
-    try {
-      const response = await axios.post<Iremove>(
-        "/api/CallDevice/RemoveCallDevice",
-        {
-          ...payload,
-        }
-      );
-      return response.data;
-    } catch (error) {
-      return rejectWithValue("Failed to fetch device data");
-    }
-  }
-);
+// export const upDateCall = createAsyncThunk(
+//   "reg_device/update",
+//   async (payload: Iupdate[], { rejectWithValue }) => {
+//     try {
+//       const response = await axios.post<Iupdate>(
+//         "/api/CallDevice/UpdateCallDevice",
+//         {
+//           ...payload,
+//         }
+//       );
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue("Failed to fetch device data");
+//     }
+//   }
+// );
+// export const removeCall = createAsyncThunk(
+//   "reg_device/remove",
+//   async (payload: Iremove, { rejectWithValue }) => {
+//     try {
+//       const response = await axios.post<Iremove>(
+//         "/api/CallDevice/RemoveCallDevice",
+//         {
+//           ...payload,
+//         }
+//       );
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue("Failed to fetch device data");
+//     }
+//   }
+// );
 const deviceSlice = createSlice({
   name: "device",
   initialState,
@@ -136,26 +136,26 @@ const deviceSlice = createSlice({
       })
       .addCase(
         getRegCall.fulfilled,
-        (state, { payload }: PayloadAction<CallState>) => {
+        (state, { payload }: PayloadAction<CallBase>) => {
           console.log(payload)
           state.loading = false;
-          state.regCall = payload;
+          state.regCall = payload
         }
       )
-      .addCase(
-        upDateCall.fulfilled,
-        (state, { payload }: PayloadAction<Iupdate>) => {
-          state.loading = false;
-          state.updateCall = payload;
-        }
-      )
-      .addCase(
-        removeCall.fulfilled,
-        (state, { payload }: PayloadAction<Iremove>) => {
-          state.loading = false;
-          state.removeCall = payload;
-        }
-      );
+      // .addCase(
+      //   upDateCall.fulfilled,
+      //   (state, { payload }: PayloadAction<Iupdate>) => {
+      //     state.loading = false;
+      //     state.updateCall = payload;
+      //   }
+      // )
+      // .addCase(
+      //   removeCall.fulfilled,
+      //   (state, { payload }: PayloadAction<Iremove>) => {
+      //     state.loading = false;
+      //     state.removeCall = payload;
+      //   }
+      // );
   },
 });
 export default deviceSlice.reducer;
