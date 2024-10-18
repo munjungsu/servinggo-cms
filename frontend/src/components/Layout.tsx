@@ -8,7 +8,7 @@ const Layout = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          height: "100%",
+          height: "100vh",
           background: `url(/img/layoutBgImg.jpg)`,
           backgroundSize: "100% 100%",
           "& > main": {

@@ -13,6 +13,7 @@ export interface DialogProps {
     title: string,
     content: string,
     action: ()=>void,
+    onClose?: ()=>void,
 }
 export enum DisconnectType {
     None = 0,

@@ -1,45 +1,36 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { Call, CallBase } from "../types/servinggo-protocol ";
-//import { Call } from "../types/call";
-// interface Call {
-//   no: string,
-//   mapNode: mapNode,
-//   serialNo: string,
-//   type: number,
-//   createdAt: string
-// }
-// interface mapNode {
-//   name: string,
-//   type: number,
-//   no: number,
-//   index: number
-// }
-// interface regCall {
-//   call_: CallBase
-// }
+import { Call, CallBase, CallDeviceType, GetRegCallDeviceRes } from "../types/servinggo-protocol ";
 interface CallState {
   callList: Call[];
-  //call? : CallBase
-  regCall?:  CallBase;
-  // updateCall?: Iupdate;
-  // removeCall?: Iremove;
+  regCall:  GetRegCallDeviceRes;
   loading: boolean;
+  error?: string;
 }
-// interface Iupdate {
-//   updateCall: Call;
-// }
-// interface Iremove {
-//   removeCall: number;
-// }
+
 
 const initialState: CallState = {
   callList: [],
-  regCall: new CallBase(),
+  regCall: {
+    call : {
+      no: 0,
+      type: CallDeviceType.None,
+      serialNo: '',
+      createdAt: new Date(),
+    },
+    protocolId: 0,
+    result: 204,
+    description: "",
+    unAllocateMapList : [],
+    // no: 0,
+    // type: CallDeviceType.None,
+    // serialNo: '',
+    // createdAt: new Date(),
+  },
   loading: false,
 };
 //전체 콜 목록 조회
-export const getDeviceAll = createAsyncThunk(
+export const getDeviceAll = createAsyncThunk<CallState, void>(
   "device/get",
   async (_, { rejectWithValue }) => {
     try {
@@ -53,15 +44,13 @@ export const getDeviceAll = createAsyncThunk(
   }
 );
 //등록 할 콜이 있는지 조회
-export const getRegCall = createAsyncThunk(
+export const getRegCall = createAsyncThunk<GetRegCallDeviceRes, void>(
   "reg_device/get",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get<CallBase>(
+      const response = await axios.get<GetRegCallDeviceRes>(
         "/api/CallDevice/GetRegCallDevice"
       );
-      console.log('----------------')
-      console.log('--- response data === ', response.data)
       return response.data;
     } catch (error) {
       return rejectWithValue("Failed to fetch device data");
@@ -131,17 +120,21 @@ const deviceSlice = createSlice({
           state.callList = payload.callList;
         }
       )
-      .addCase(getDeviceAll.rejected, (state) => {
+      .addCase(getDeviceAll.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload as string;
       })
       .addCase(
         getRegCall.fulfilled,
-        (state, { payload }: PayloadAction<CallBase>) => {
-          console.log(payload)
+        (state, { payload }: PayloadAction<GetRegCallDeviceRes>) => {
           state.loading = false;
           state.regCall = payload
         }
       )
+      .addCase(getRegCall.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
       // .addCase(
       //   upDateCall.fulfilled,
       //   (state, { payload }: PayloadAction<Iupdate>) => {

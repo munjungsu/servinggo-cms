@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { SetStateAction } from 'react';
 import { Reset } from 'styled-reset';
 import { useRoutes } from 'react-router-dom';
 import Layout from './components/Layout';
@@ -9,29 +9,22 @@ import { useInterval } from './utils/useInterval';
 import { useAppDispatch, useAppSelector } from './store';
 import { getRegCall, getDeviceAll } from './slices/DeviceSlice';
 import { CallBase } from './types/servinggo-protocol ';
+import { GetRegCallDeviceRes } from './types/servinggo-protocol ';
 
 function App() {
   const dispatch = useAppDispatch();
   const { regCall, callList } = useAppSelector((state)=>state.device)
-  //const regCall = useAppSelector((state)=>state.device);
-  const [reg, setReg] = React.useState<CallBase>(new CallBase());
-
+  
+ 
   useInterval(()=>{
     dispatch(getRegCall())
   }, 1000);
 
   React.useEffect(()=>{
-    //console.log('regCall === ', regCall.call);
-    //setReg(regCall.call);
-  }, [regCall]);
-
-  React.useEffect(()=>{
-    //setReg(regCall ? regCall : new CallBase());
     dispatch(getDeviceAll());
-  }, [])
-  console.log(regCall)
-  console.log(callList)
- const num = 1
+  }, []);
+
+
   return (
     <div className="App">
       <Reset />
@@ -42,7 +35,7 @@ function App() {
           children: [
             { path: "/", element: <Main /> },
             { path: "/robot", element: <Robot /> },
-            { path: "/bell", element: <Bell /> },
+            { path: "/bell", element: <Bell regCall={regCall}/> },
           ],
         },
         // { path: "/*", element: <Navigate to="/serving" /> },

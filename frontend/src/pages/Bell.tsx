@@ -17,7 +17,8 @@ import {
 } from "../constants/icons";
 import type { DialogProps } from "../types/types";
 import { AlertDialog } from "../components/AlertDialog";
-import { CallBase, Call } from "../types/servinggo-protocol ";
+import { GetRegCallDeviceRes } from "../types/servinggo-protocol ";
+import AddCallDialog from "../components/AddCallDialog";
 interface bells {
   id: string;
   table: string;
@@ -33,9 +34,17 @@ let dummyBell = [
   { id: "g", table: "7", check: false },
   { id: "h", table: "8", check: false },
 ];
-const Bell = () => {
+const Bell: React.FC<{regCall : GetRegCallDeviceRes}> = ({ regCall }) => {
   const [bells, setBells] = React.useState<bells[]>(dummyBell);
   const [alertProps, setAlertProps] = React.useState<DialogProps>({
+    open: false,
+    title: "",
+    content: "",
+    action: ()=>{
+
+    },
+  })
+  const [addCallProps, setAddCallProps] = React.useState<DialogProps>({
     open: false,
     title: "",
     content: "",
@@ -67,26 +76,26 @@ const Bell = () => {
           );
     }
   };
-  const handleAlertOpen = (e:string)=>{
-    if(e !== "선택삭제"){
-        setAlertProps({
-            open: true,
-            title: "삭제 하시겠습니까?",
-            content: "",
-            action : ()=>{
-                handleDelete(e)
-            }
-        })
-    }else{
-        setAlertProps({
-            open: true,
-            title: "선택한 호출벨을 삭제 하시겠습니까?",
-            content: "",
-            action : handleDeleteAll
-        })
-    }
+  // const handleAlertOpen = (e:string)=>{
+  //   if(e !== "선택삭제"){
+  //       setAlertProps({
+  //           open: true,
+  //           title: "삭제 하시겠습니까?",
+  //           content: "",
+  //           action : ()=>{
+  //               handleDelete(e)
+  //           }
+  //       })
+  //   }else{
+  //       setAlertProps({
+  //           open: true,
+  //           title: "선택한 호출벨을 삭제 하시겠습니까?",
+  //           content: "",
+  //           action : handleDeleteAll
+  //       })
+  //   }
   
-  }
+  // }
   const handleClose = ()=>{
     setAlertProps({
         open: false,
@@ -102,6 +111,24 @@ const Bell = () => {
   }
   const handleDeleteAll = ()=>{
     setBells(bells.filter((v)=>v.check === false))
+  }
+  const handleAddClick = ()=>{
+    setAddCallProps({
+      open: true,
+      title: "지도 선택",
+      content: "",
+      action : ()=>{
+      }
+  })
+  }
+  const handleAddCallClose = ()=>{
+    setAddCallProps({
+      open: false,
+      title: "",
+      content: "",
+      action : ()=>{
+      }
+    })
   }
   return (
     <Box
@@ -250,7 +277,7 @@ const Bell = () => {
           </Typography>
           <Button
             disabled={bells.every((b) => b.check === false)}
-            onClick={()=>handleAlertOpen("선택삭제")}
+            //onClick={()=>handleAlertOpen("선택삭제")}
           >
             선택 삭제
           </Button>
@@ -288,7 +315,7 @@ const Bell = () => {
                 </IconButton>
                 <IconButton
                   className="delete"
-                  onClick={()=>handleAlertOpen(bell.id)}
+                  //onClick={()=>handleAlertOpen(bell.id)}
                 >
                   <DeleteIcon />
                 </IconButton>
@@ -300,13 +327,25 @@ const Bell = () => {
       <div className="signal">
         <BellIcon />
         {
-          
+          regCall.call.serialNo !== "" ? (
+            <>
+             <Typography className="mainContent">
+              등록되지 않은 호출벨 입니다.
+              <br />
+              등록하시려면 아래 버튼을 눌러주세요.
+            </Typography>
+            <Button onClick={handleAddClick}>등록</Button>
+            </>
+          ) : (
+            <>
+             <Typography className="mainContent">
+              호출벨을 테스트 또는 등록하려면
+              <br />
+              호출벨을 눌러주세요.
+            </Typography>
+            </>
+          )
         }
-        <Typography className="mainContent">
-          호출벨을 테스트 또는 등록하려면
-          <br />
-          호출벨을 눌러주세요.
-        </Typography>
         {/* {bellIcon}
         {mainContent}
         {subContent} */}
@@ -314,6 +353,11 @@ const Bell = () => {
       {
         alertProps.open && (
             <AlertDialog {...alertProps} onClose={handleClose}/>
+        )
+      }
+      {
+        addCallProps.open && (
+            <AddCallDialog {...addCallProps} regCall={regCall} onClose={handleAddCallClose}/>
         )
       }
     </Box>
