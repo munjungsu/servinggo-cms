@@ -17,12 +17,16 @@ import {
 } from "../constants/icons";
 import type { DialogProps } from "../types/types";
 import { AlertDialog } from "../components/AlertDialog";
-import { GetRegCallDeviceRes } from "../types/servinggo-protocol ";
+import { GetRegCallDeviceRes, GetAllCallListRes, Call } from "../types/servinggo-protocol ";
 import AddCallDialog from "../components/AddCallDialog";
+import { useAppDispatch, useAppSelector } from "../store";
 interface bells {
   id: string;
   table: string;
   check: boolean;
+}
+interface newCall extends Call {
+  selected : boolean
 }
 let dummyBell = [
   { id: "a", table: "1", check: false },
@@ -34,8 +38,8 @@ let dummyBell = [
   { id: "g", table: "7", check: false },
   { id: "h", table: "8", check: false },
 ];
-const Bell: React.FC<{regCall : GetRegCallDeviceRes}> = ({ regCall }) => {
-  const [bells, setBells] = React.useState<bells[]>(dummyBell);
+const Bell: React.FC<{regCall: GetRegCallDeviceRes; callList: Call[]}> = ({ regCall, callList }) => {
+  const [bells, setBells] = React.useState<newCall[]>([]);
   const [alertProps, setAlertProps] = React.useState<DialogProps>({
     open: false,
     title: "",
@@ -52,50 +56,55 @@ const Bell: React.FC<{regCall : GetRegCallDeviceRes}> = ({ regCall }) => {
 
     },
   })
-
+  React.useEffect(()=>{
+    setBells(callList.map((prev)=>({
+      ...prev,
+      selected : false
+    })))
+  }, [callList])
   const sign = true;
   const handleCheck = (id: string) => (e: ChangeEvent<HTMLInputElement>) => {
     setBells((bells) =>
-      bells.map((v) => (v.id=== id ? { ...v, check: !v.check } : v))
+      bells.map((v) => (v.serialNo=== id ? { ...v, selected: !v.selected } : v))
     );
   };
   const handleAllCheck = () => {
-    if(bells.some((v)=>!v.check)){
+    if(bells.some((v)=>!v.selected)){
         setBells((bells) =>
             bells.map((v) => ({
               ...v,
-              check: true,
+              selected: true,
             }))
           );
     }else {
         setBells((bells) =>
             bells.map((v) => ({
               ...v,
-              check: false
+              selected: false
             }))
           );
     }
   };
-  // const handleAlertOpen = (e:string)=>{
-  //   if(e !== "선택삭제"){
-  //       setAlertProps({
-  //           open: true,
-  //           title: "삭제 하시겠습니까?",
-  //           content: "",
-  //           action : ()=>{
-  //               handleDelete(e)
-  //           }
-  //       })
-  //   }else{
-  //       setAlertProps({
-  //           open: true,
-  //           title: "선택한 호출벨을 삭제 하시겠습니까?",
-  //           content: "",
-  //           action : handleDeleteAll
-  //       })
-  //   }
+  const handleAlertOpen = (e:string)=>{
+    if(e !== "선택삭제"){
+        setAlertProps({
+            open: true,
+            title: "삭제 하시겠습니까?",
+            content: "",
+            action : ()=>{
+                handleDelete(e)
+            }
+        })
+    }else{
+        setAlertProps({
+            open: true,
+            title: "선택한 호출벨을 삭제 하시겠습니까?",
+            content: "",
+            action : handleDeleteAll
+        })
+    }
   
-  // }
+  }
   const handleClose = ()=>{
     setAlertProps({
         open: false,
@@ -107,10 +116,10 @@ const Bell: React.FC<{regCall : GetRegCallDeviceRes}> = ({ regCall }) => {
   }
   const handleDelete = (e:string)=>{
    
-    setBells(bells.filter((v)=>v.id !== e))
+    setBells(bells.filter((v)=>v.serialNo !== e))
   }
   const handleDeleteAll = ()=>{
-    setBells(bells.filter((v)=>v.check === false))
+    setBells(bells.filter((v)=>v.selected === false))
   }
   const handleAddClick = ()=>{
     setAddCallProps({
@@ -276,8 +285,8 @@ const Bell: React.FC<{regCall : GetRegCallDeviceRes}> = ({ regCall }) => {
             호출벨 리스트
           </Typography>
           <Button
-            disabled={bells.every((b) => b.check === false)}
-            //onClick={()=>handleAlertOpen("선택삭제")}
+            disabled={bells.every((b) => b.selected === false)}
+            onClick={()=>handleAlertOpen("선택삭제")}
           >
             선택 삭제
           </Button>
@@ -287,7 +296,7 @@ const Bell: React.FC<{regCall : GetRegCallDeviceRes}> = ({ regCall }) => {
             <div className="tableRow">
               <Checkbox
                 className="checkbox"
-                checked={bells.every((b) => b.check === true)}
+                checked={bells.every((b) => b.selected === true)}
                 onChange={handleAllCheck}
               />
               <Typography className="id">호출벨 ID</Typography>
@@ -298,15 +307,15 @@ const Bell: React.FC<{regCall : GetRegCallDeviceRes}> = ({ regCall }) => {
           </div>
           <div className="tableBody">
             {bells.map((bell, idx) => (
-              <div key={bell.id} className="tableRow">
+              <div key={idx} className="tableRow">
                 <Checkbox
                   className="checkbox"
-                  checked={bell.check}
-                  onChange={handleCheck(bell.id)}
+                  checked={bell.selected}
+                  onChange={handleCheck(bell.serialNo)}
                   //onChange={handleCheckChange(idx)}
                 />
-                <Typography className="id">{bell.id}</Typography>
-                <Typography className="table">{bell.table}</Typography>
+                <Typography className="id">{bell.serialNo}</Typography>
+                <Typography className="table">{bell.mapNode.name}</Typography>
                 <IconButton
                   className="edit"
                   //onClick={handleEditClick(bell)}

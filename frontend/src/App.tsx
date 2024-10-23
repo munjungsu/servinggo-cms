@@ -35,7 +35,7 @@ function App() {
           children: [
             { path: "/", element: <Main /> },
             { path: "/robot", element: <Robot /> },
-            { path: "/bell", element: <Bell regCall={regCall}/> },
+            { path: "/bell", element: <Bell regCall={regCall} callList={callList}/> },
           ],
         },
         // { path: "/*", element: <Navigate to="/serving" /> },

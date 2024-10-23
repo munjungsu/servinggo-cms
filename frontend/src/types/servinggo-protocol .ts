@@ -331,7 +331,7 @@ export class UpdateCallDeviceRes extends BaseResponse {
 }
 
 export class RemoveCallDeviceReq {
-    callDeviceNo: number = 0;
+    callDeviceNo: number[] = [];
 }
 
 export class RemoveCallDeviceRes extends BaseResponse { }

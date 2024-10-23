@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { Call, CallBase, CallDeviceType, GetRegCallDeviceRes } from "../types/servinggo-protocol ";
+import { Call, CallBase, CallDeviceType, GetRegCallDeviceRes, RegCallDeviceReq } from "../types/servinggo-protocol ";
 interface CallState {
   callList: Call[];
   regCall:  GetRegCallDeviceRes;
@@ -60,11 +60,14 @@ export const getRegCall = createAsyncThunk<GetRegCallDeviceRes, void>(
 //콜 매칭
 export const setRegCall = createAsyncThunk(
   "reg_device/set",
-  async (_, { rejectWithValue }) => {
+  async (payload:any, { rejectWithValue }) => {
     try {
-      const response = await axios.get<CallBase>(
-        "/api/CallDevice/GetRegCallDevice"
+      const response = await axios.post<RegCallDeviceReq>(
+        "/api/CallDevice/RegCallDevice", {
+          ...payload
+        }
       );
+      console.log(payload)
       return response.data;
     } catch (error) {
       return rejectWithValue("Failed to fetch device data");
@@ -132,6 +135,20 @@ const deviceSlice = createSlice({
         }
       )
       .addCase(getRegCall.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(setRegCall.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(
+        setRegCall.fulfilled,
+        (state, { payload }: PayloadAction<RegCallDeviceReq>) => {
+          console.log(payload)
+          state.loading = false;
+        }
+      )
+      .addCase(setRegCall.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })

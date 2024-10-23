@@ -9,13 +9,21 @@ import {
   GetRegCallDeviceRes,
   CallBase,
   MapNode,
+  Call,
+  RegCallDeviceReq
 } from "../types/servinggo-protocol ";
+import { useAppDispatch } from "../store";
+import { setRegCall } from "../slices/DeviceSlice";
 interface AddCallDialogProps extends DialogProps {
   regCall: GetRegCallDeviceRes;
 }
 interface newMapNode extends MapNode {
-  selected: boolean;
+  selected: boolean
 }
+
+// interface newMapNode extends MapNode {
+//   selected: boolean;
+// }
 const AddCallDialog: React.FC<AddCallDialogProps> = ({
   open,
   title,
@@ -24,36 +32,73 @@ const AddCallDialog: React.FC<AddCallDialogProps> = ({
   onClose : handleAddCallClose,
   regCall,
 }) => {
+  const dispatch = useAppDispatch();
   const [selectMap, setSelectMap] = React.useState<string>(
     regCall.unAllocateMapList[0].name
   );
   const [destination, setDestination] = React.useState<newMapNode[]>([]);
+  const [selectedNode, setSelectedNode] = React.useState<RegCallDeviceReq>();
   React.useEffect(() => {
     const nodeList =
       regCall.unAllocateMapList.find((v) => v.name === selectMap)
         ?.mapNodeList ?? [];
-    console.log(nodeList);
     setDestination(
-      nodeList.map((d) => ({
-        ...d,
-        selected: false,
+      nodeList.map((prev)=>({
+        ...prev,
+        selected: false
       }))
     );
+   
   }, [selectMap]);
   const handleChange = (event: SelectChangeEvent<string>) => {
     //dispatch 맵 체인지
     setSelectMap(event.target.value);
   };
+  
   const handleNodeClick = (event: string) => {
-    console.log(event);
-    setDestination((ds) =>
-      ds.map((d) =>
-        d.name === event
-          ? { ...d, selected: !d.selected }
-          : { ...d, selected: false }
-      )
-    );
+  
+     const findNode = destination.find((v)=>v.name === event) as MapNode;
+    // console.log(findNode)
+    setDestination((select) =>
+      select.map((t)=> t.name === event ? { ...t, selected: !t.selected} : {...t, selected: false})
+    )
+    const matchCall = new Call()
+    
+    matchCall.createdAt = regCall.call.createdAt
+    matchCall.no = regCall.call.no
+    matchCall.serialNo = regCall.call.serialNo
+    matchCall.type = regCall.call.type
+    matchCall.mapNode = {
+      no : findNode.no,
+      index: findNode.index,
+      name: findNode.name,
+      type: findNode.type
+    }
+    
+    setSelectedNode({
+      call : {
+        createdAt : regCall.call.createdAt,
+        no : regCall.call.no,
+        serialNo : regCall.call.serialNo,
+        type : regCall.call.type,
+        mapNode : {
+          no : findNode.no,
+          index: findNode.index,
+          name: findNode.name,
+          type: findNode.type
+        }
+      }
+    });
+   
   };
+  console.log(selectedNode)
+  const handleSaveCall = ()=>{
+   
+   
+    dispatch(setRegCall(
+       selectedNode
+    ))
+  }
   return (
     <Dialog
       open={open}
@@ -210,7 +255,9 @@ const AddCallDialog: React.FC<AddCallDialogProps> = ({
             // <Typography>{v.name}</Typography>
             // </div>
             <div
+              //className={destination.some((v)=>v.name === selectedNode?.name) ? "nodeActive" : "node"}
               className={v.selected ? "nodeActive" : "node"}
+              //className={`node`}
               onClick={() => handleNodeClick(v.name)}
               key={i}
             >
@@ -235,7 +282,7 @@ const AddCallDialog: React.FC<AddCallDialogProps> = ({
             ))} */}
       </div>
       <div className="actions">
-        <Button className="confirmButton">콜 할당 저장하기</Button>
+        <Button className="confirmButton" onClick={handleSaveCall}>콜 할당 저장하기</Button>
       </div>
     </Dialog>
   );
