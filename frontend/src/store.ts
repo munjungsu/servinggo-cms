@@ -4,6 +4,9 @@ import logger from 'redux-logger'
 import AuthSlice from "./slices/AuthSlice";
 import DeviceSlice from "./slices/DeviceSlice";
 import TestSlice from "./slices/TestSlice";
+import RobotSlice from "./slices/RobotSlice";
+import OrderSlice from "./slices/OrderSlice";
+import CommandSlice from "./slices/CommandSlice";
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
@@ -11,7 +14,10 @@ const store = configureStore({
     reducer : {
        login: AuthSlice,
        device: DeviceSlice,
-       test: TestSlice
+       robot: RobotSlice,
+       test: TestSlice,
+       order: OrderSlice,
+       command: CommandSlice
     },
     middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(logger),

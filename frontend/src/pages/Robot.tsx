@@ -2,6 +2,7 @@ import React, { SetStateAction } from 'react';
 import { useTheme, Box, Button } from "@mui/material";
 import RobotCard from '../components/RobotCard';
 import type { Card } from '../types/types';
+import { GetAllRobotListRes, Call, RobotDetailSummary } from '../types/servinggo-protocol';
 import { useAppDispatch, useAppSelector } from '../store';
 import { getDeviceAll, getRegCall } from '../slices/DeviceSlice';
 let RobotCardData: Card[] = [
@@ -40,11 +41,12 @@ const RobotAddCard = ()=>{
       );
 }
 
-const Robot = () => {
+const Robot: React.FC<{robotDetailSummaryList: RobotDetailSummary[]; callList: Call[]}> = ({ robotDetailSummaryList, callList }) => {
     const dispatch = useAppDispatch();
+    const { orderList } = useAppSelector((state)=>state.order);
     const [cardData, setCardData] = React.useState<Card[]>(RobotCardData)
     //const [callData, setCallData] = React.useState<Call>(new Call())
-    const { callList, regCall } = useAppSelector((state)=>state.device);
+
     let dummyCall = [
        "123","456","789","101","102","103","104","105","106",
        "107","108","109","110","110","111","112","113","114",
@@ -52,13 +54,7 @@ const Robot = () => {
     ]
     const [selectCall, setSelectCall] = React.useState<string>("");
     const [calls, setCalls] = React.useState<string[]>(dummyCall);
-    // React.useEffect(()=>{
-    //   const modCallData = new Call();
-    //   modCallData.No = 1111;
-    //   modCallData.Type = 1
-    //   modCallData.SerialNo = "2222"
-    //   setCallData(modCallData)
-    // }, [])
+  
   
     React.useEffect(()=>{
       dispatch(getDeviceAll());
@@ -100,7 +96,7 @@ const Robot = () => {
       )
       setCalls((e)=>[...e, call])
     }
-    console.log(callList)
+    
     return (
         <Box sx={{
             flex: 1,
@@ -205,9 +201,9 @@ const Robot = () => {
                   ))
                 } */}
                 {
-                  callList.map((calls, i)=>(
-                    <Button className={"button"} key={i} onClick={()=>handleSelectCall(calls.mapNode.name)}>{calls.mapNode.name}
-                    <img src="/img/cancel.svg" onClick={()=>handleCallRemove(calls.mapNode.name)}/>
+                  orderList && orderList.map((calls, i)=>(
+                    <Button className={"button"} key={i} onClick={()=>handleSelectCall(calls.call.mapNode.name)}>{calls.call.mapNode.name}
+                    <img src="/img/cancel.svg" onClick={()=>handleCallRemove(calls.call.mapNode.name)}/>
                   </Button>
                   ))
                 }
@@ -216,8 +212,8 @@ const Robot = () => {
             <div className="cardContainer">
               
             {
-              cardData.map((card)=>(
-                <RobotCard card={card} key={card.id} selectCall={selectCall} handleAdd={handleAddCall} handleDelete={handleDeleteCall} />
+              robotDetailSummaryList && robotDetailSummaryList.map((robot, i)=>(
+                <RobotCard robot={robot} key={i} />
               ))
             }
             {/* <RobotAddCard /> */}

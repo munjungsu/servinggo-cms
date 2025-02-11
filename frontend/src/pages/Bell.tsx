@@ -17,28 +17,17 @@ import {
 } from "../constants/icons";
 import type { DialogProps } from "../types/types";
 import { AlertDialog } from "../components/AlertDialog";
-import { GetRegCallDeviceRes, GetAllCallListRes, Call } from "../types/servinggo-protocol ";
+import { GetRegCallDeviceRes, GetAllCallListRes, Call } from "../types/servinggo-protocol";
 import AddCallDialog from "../components/AddCallDialog";
+import { getDeviceAll, removeCall } from "../slices/DeviceSlice";
 import { useAppDispatch, useAppSelector } from "../store";
-interface bells {
-  id: string;
-  table: string;
-  check: boolean;
-}
+
 interface newCall extends Call {
   selected : boolean
 }
-let dummyBell = [
-  { id: "a", table: "1", check: false },
-  { id: "b", table: "2", check: false },
-  { id: "c", table: "3", check: false },
-  { id: "d", table: "4", check: false },
-  { id: "e", table: "5", check: false },
-  { id: "f", table: "6", check: false },
-  { id: "g", table: "7", check: false },
-  { id: "h", table: "8", check: false },
-];
+
 const Bell: React.FC<{regCall: GetRegCallDeviceRes; callList: Call[]}> = ({ regCall, callList }) => {
+  const dispatch = useAppDispatch();
   const [bells, setBells] = React.useState<newCall[]>([]);
   const [alertProps, setAlertProps] = React.useState<DialogProps>({
     open: false,
@@ -85,22 +74,32 @@ const Bell: React.FC<{regCall: GetRegCallDeviceRes; callList: Call[]}> = ({ regC
           );
     }
   };
-  const handleAlertOpen = (e:string)=>{
+
+  const handleAlertOpen = (e:string | Number)=>{
+    const selectedNo = bells.filter(item => item.selected).map(item => item.no)
+    
     if(e !== "선택삭제"){
         setAlertProps({
             open: true,
             title: "삭제 하시겠습니까?",
             content: "",
             action : ()=>{
-                handleDelete(e)
+              dispatch(removeCall({
+                callDeviceNoList : [Number(e)]
+              }))
             }
         })
-    }else{
+    }
+    else{
         setAlertProps({
             open: true,
             title: "선택한 호출벨을 삭제 하시겠습니까?",
             content: "",
-            action : handleDeleteAll
+            action : ()=>{
+              dispatch(removeCall({
+                callDeviceNoList : selectedNo
+              }))
+            }
         })
     }
   
@@ -114,11 +113,13 @@ const Bell: React.FC<{regCall: GetRegCallDeviceRes; callList: Call[]}> = ({ regC
         }
     })
   }
-  const handleDelete = (e:string)=>{
-   
-    setBells(bells.filter((v)=>v.serialNo !== e))
+ 
+  const handleDelete = (e:Number[])=>{
+    console.log(e)
+    //setBells(bells.filter((v)=>v.serialNo !== e))
   }
   const handleDeleteAll = ()=>{
+
     setBells(bells.filter((v)=>v.selected === false))
   }
   const handleAddClick = ()=>{
@@ -152,7 +153,6 @@ const Bell: React.FC<{regCall: GetRegCallDeviceRes; callList: Call[]}> = ({ regC
         boxShadow: "0px 8px 18px #00000029",
         "& > .list": {
           display: "flex",
-          height: "80.5vh",
           flexDirection: "column",
           flex: 1,
           background: `url(/img/mainBgImg.jpg)`,
@@ -191,7 +191,10 @@ const Bell: React.FC<{regCall: GetRegCallDeviceRes; callList: Call[]}> = ({ regC
             flex: 1,
             overflow: "hidden",
             "& > .tableHead": { borderBottom: `1px solid ${"#BDBDBD"}` },
-            "& > .tableBody": { flex: 1, overflow: "auto" },
+            "& > .tableBody": { 
+              flex: 1, 
+              overflow: "auto", 
+             },
             "& .tableRow": {
               display: "flex",
               alignItems: "center",
@@ -211,10 +214,13 @@ const Bell: React.FC<{regCall: GetRegCallDeviceRes; callList: Call[]}> = ({ regC
                 color: "#BDBDBD",
               },
               "& > .id": {
-                width: `${136 / 19.2}vw`,
+                width: `${136 / 12.2}vw`,
                 marginRight: "auto",
                 fontSize: `${28 / 19.2}vw`,
                 color: "white",
+                display: "block",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
                 fontFamily: "Pretendard",
               },
               "& > .table": {
@@ -245,10 +251,12 @@ const Bell: React.FC<{regCall: GetRegCallDeviceRes; callList: Call[]}> = ({ regC
           },
         },
         "& > .signal": {
+          boxSizing: "border-box",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           width: `${760 / 19.2}vw`,
+          height: "100%",
           background: `url(/img/mainBgImg.jpg)`,
           borderRadius: `${12 / 14.2}vw`,
           "& > svg": {
@@ -324,7 +332,7 @@ const Bell: React.FC<{regCall: GetRegCallDeviceRes; callList: Call[]}> = ({ regC
                 </IconButton>
                 <IconButton
                   className="delete"
-                  //onClick={()=>handleAlertOpen(bell.id)}
+                  onClick={()=>handleAlertOpen(bell.no)}
                 >
                   <DeleteIcon />
                 </IconButton>

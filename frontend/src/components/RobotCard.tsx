@@ -18,42 +18,50 @@ import {
   DotsVerticalIcon,
 } from "../constants/icons";
 import type { Card } from "../types/types";
-
+import { RobotDetailSummary, Call, GetOrderListRes, Order } from "../types/servinggo-protocol";
+import { useAppDispatch } from "../store";
+import { robotHome, robotPause } from "../slices/CommandSlice";
 interface cardProps {
   card: Card;
   selectCall: string;
   //selectCall: string,
   handleAdd: (carId: number, call: string) => void;
-  handleDelete: (carId: number, call: string) => void;
+  //handleDelete: (carId: number, call: string) => void;
   //calls: string[],
   children?: ReactNode;
 }
-const RobotCard = ({
-  card,
-  handleAdd,
-  handleDelete,
-  selectCall,
-  children,
-}: cardProps) => {
+const RobotCard: React.FC<{ robot : RobotDetailSummary; }> = ({ robot }) => {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
   const pauseDisabled = true;
   const [open, setOpen] = React.useState<boolean>(false);
   const [pause, setPause] = React.useState<boolean>(false);
   const [menuAnchor, setMenuAnchor] = React.useState(null);
   //const [calls, setCalls] = React.useState<string[]>([]);
+  React.useEffect(()=>{
+
+  }, [robot])
   const handleMenuClick = (e: any) => {
     setMenuAnchor(e.currentTarget);
   };
   //console.log(card.calls)
-  const handleAddCall = (id: number, call: string) => {
-    //console.log(call.length)
-    handleAdd(id, call);
-  };
-  React.useEffect(() => {}, [handleAdd, handleDelete]);
+  // const handleAddCall = (id: number, call: string) => {
+  //   //console.log(call.length)
+  //   handleAdd(id, call);
+  // };
+  //React.useEffect(() => {}, [handleAdd, handleDelete]);
+  //console.log(robot)
+  const handleDelete = (e: any)=>{
 
+  }
   const handleMenuClose = () => {
     setMenuAnchor(null);
   };
+  const handleGoHome = (e:number)=>{
+    dispatch(robotHome({
+      robotNo : e
+    }))
+  }
   const handleEditIpClick = () => {};
   const handleEditTablesClick = () => {};
   const handleDeleteRobotClick = () => {};
@@ -322,8 +330,8 @@ const RobotCard = ({
       </Menu>
       <div className="Container">
         <div className="textWrap">
-          <span className="name">{card.name}</span>
-          <span className="ip">192.168.60.102</span>
+          <span className="name">{robot.robotBaseInfo.id}</span>
+          <span className="ip">{robot.robotStatus.trayCount} / {robot.robotStatus.battery}%</span>
         </div>
         <div className="progressWrap">
           <div className="progressBar">
@@ -343,13 +351,13 @@ const RobotCard = ({
         <div className="item">
           <span className="table">12</span>
         </div> */}
-          {card.calls &&
-            card.calls.map((v, i) => (
+          {robot &&
+            robot.orderList.map((v, i) => (
               <div className="item" key={i}>
-                <span className="table">{v}</span>
+                <span className="table">{v.call.mapNode.name}</span>
                 <img
                   src="/img/cancel.svg"
-                  onClick={() => handleDelete(card.id, v)}
+                  onClick={() => handleDelete(v.call.mapNode.name)}
                 />
               </div>
             ))}
@@ -358,7 +366,7 @@ const RobotCard = ({
           <Button
             className="returnButton"
             //disabled={returnDisabled}
-            //onClick={handleReturnClick}
+            onClick={()=>handleGoHome(robot.robotBaseInfo.no)}
           >
             <HomeIcon />
             홈으로 복귀
@@ -376,16 +384,16 @@ const RobotCard = ({
       <div className="addCallButtonWrap">
         <Button
           className={
-            card.calls && card.calls?.length > 3
+            robot.orderList && robot.orderList?.length > 3
               ? "addCallButtonLock"
               : "addCallButton"
           }
-          onClick={() => handleAddCall(card.id, selectCall)}
+          //onClick={() => handleAddCall(card.id, selectCall)}
         >
-          {`${card.name}에게 콜 주기`}
+          {`${robot.robotBaseInfo.id}에게 콜 주기`}
         </Button>
       </div>
-      {children}
+      {/* {children} */}
       <Modal
         open={open}
         onClose={handleClose}
@@ -579,7 +587,7 @@ const RobotCard = ({
         >
           <div className="modal_TopWrap">
             <div className="textWrap">
-              <span className="modal-title">{card.name}</span>
+              {/* <span className="modal-title">{card.name}</span> */}
               <span className="modal-ip">192.168.60.102</span>
             </div>
             <div className="buttonWrap">
@@ -601,7 +609,7 @@ const RobotCard = ({
               <Button className="button">여기로 이동</Button>
             </div>
             <div className="assigned">
-              <span className="content-title">{card.name} 할당 콜</span>
+              {/* <span className="content-title">{card.name} 할당 콜</span> */}
               <div className="content"></div>
               <Button className="button">여기로 이동</Button>
             </div>

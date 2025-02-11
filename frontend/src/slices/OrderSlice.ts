@@ -1,23 +1,23 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { GetAllRobotListRes } from "../types/servinggo-protocol";
+import { GetOrderListRes } from "../types/servinggo-protocol";
 import axios from "axios";
-interface GetRobot extends GetAllRobotListRes {
+interface GetOrder extends GetOrderListRes {
   loading : boolean
   error?: string;
 }
-const initialState: GetRobot = {
-  robotDetailSummaryList: [],
+const initialState: GetOrder = {
+  orderList: [],
   protocolId: 0,
   result: 204,
   description: "",
   loading: false,
 };
-export const getRobot = createAsyncThunk<GetRobot, void>(
-  "robot/get",
+export const getOrder = createAsyncThunk<GetOrder, void>(
+  "order/get",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get<GetRobot>(
-        "/api/Robot/GetAllRobotList"
+      const response = await axios.get<GetOrder>(
+        "/api/Order/GetOrderList"
       );
       return response.data;
     } catch (error) {
@@ -25,28 +25,29 @@ export const getRobot = createAsyncThunk<GetRobot, void>(
     }
   }
 );
-const robotSlice = createSlice({
-  name: "robot",
+
+const orderSlice = createSlice({
+  name: "order",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getRobot.pending, (state) => {
+      .addCase(getOrder.pending, (state) => {
         // state.loading = true;
         // state.error = null;
         state.loading = true
       })
       .addCase(
-        getRobot.fulfilled,
-        (state, { payload }: PayloadAction<GetRobot>) => {
+        getOrder.fulfilled,
+        (state, { payload }: PayloadAction<GetOrder>) => {
           state.loading = false;
-          state.robotDetailSummaryList = payload.robotDetailSummaryList
+          state.orderList = payload.orderList
         }
       )
-      .addCase(getRobot.rejected, (state, action) => {
+      .addCase(getOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
   },
 });
-export default robotSlice.reducer;
+export default orderSlice.reducer;

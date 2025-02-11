@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { Call, CallBase, CallDeviceType, GetRegCallDeviceRes, RegCallDeviceReq } from "../types/servinggo-protocol ";
+import { Call, CallBase, CallDeviceType, GetRegCallDeviceRes, RegCallDeviceReq, RemoveCallDeviceReq } from "../types/servinggo-protocol";
 interface CallState {
   callList: Call[];
   regCall:  GetRegCallDeviceRes;
@@ -91,22 +91,23 @@ export const setRegCall = createAsyncThunk(
 //     }
 //   }
 // );
-// export const removeCall = createAsyncThunk(
-//   "reg_device/remove",
-//   async (payload: Iremove, { rejectWithValue }) => {
-//     try {
-//       const response = await axios.post<Iremove>(
-//         "/api/CallDevice/RemoveCallDevice",
-//         {
-//           ...payload,
-//         }
-//       );
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue("Failed to fetch device data");
-//     }
-//   }
-// );
+export const removeCall = createAsyncThunk(
+  "reg_device/remove",
+  async (payload: RemoveCallDeviceReq, { rejectWithValue }) => {
+    try {
+      const response = await axios.post<RemoveCallDeviceReq>(
+        "/api/CallDevice/RemoveCallDevice",
+        {
+          ...payload,
+        }
+      );
+      console.log(payload)
+      return response.data;
+    } catch (error) {
+      return rejectWithValue("Failed to fetch device data");
+    }
+  }
+);
 const deviceSlice = createSlice({
   name: "device",
   initialState,
@@ -159,13 +160,13 @@ const deviceSlice = createSlice({
       //     state.updateCall = payload;
       //   }
       // )
-      // .addCase(
-      //   removeCall.fulfilled,
-      //   (state, { payload }: PayloadAction<Iremove>) => {
-      //     state.loading = false;
-      //     state.removeCall = payload;
-      //   }
-      // );
+      .addCase(
+        removeCall.fulfilled,
+        (state, { payload }: PayloadAction<RemoveCallDeviceReq>) => {
+          console.log(payload)
+          state.loading = false;
+        }
+      );
   },
 });
 export default deviceSlice.reducer;

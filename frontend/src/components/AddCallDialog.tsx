@@ -11,7 +11,7 @@ import {
   MapNode,
   Call,
   RegCallDeviceReq
-} from "../types/servinggo-protocol ";
+} from "../types/servinggo-protocol";
 import { useAppDispatch } from "../store";
 import { setRegCall } from "../slices/DeviceSlice";
 interface AddCallDialogProps extends DialogProps {
@@ -62,19 +62,7 @@ const AddCallDialog: React.FC<AddCallDialogProps> = ({
     setDestination((select) =>
       select.map((t)=> t.name === event ? { ...t, selected: !t.selected} : {...t, selected: false})
     )
-    const matchCall = new Call()
-    
-    matchCall.createdAt = regCall.call.createdAt
-    matchCall.no = regCall.call.no
-    matchCall.serialNo = regCall.call.serialNo
-    matchCall.type = regCall.call.type
-    matchCall.mapNode = {
-      no : findNode.no,
-      index: findNode.index,
-      name: findNode.name,
-      type: findNode.type
-    }
-    
+ 
     setSelectedNode({
       call : {
         createdAt : regCall.call.createdAt,

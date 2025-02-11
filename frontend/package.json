@@ -54,5 +54,5 @@
   "devDependencies": {
     "@types/redux-logger": "^3.0.13"
   },
-  "proxy": "http://192.168.60.161:43742"
+  "proxy": "http://192.168.60.45:5000"
 }

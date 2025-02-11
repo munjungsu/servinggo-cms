@@ -82,6 +82,16 @@ export enum CallDeviceType {
     Etc,
 }
 
+export enum OrderStatus {
+    Ready = 0,
+    Allocate,
+    Progress,
+    Cancel,
+    Finish,
+    ReReady,
+    Pause,
+}
+
 export enum RobotState {
     None = 0,
     Ready,
@@ -158,7 +168,8 @@ export class Order {
     private static _genId: number = 1;
     no: number = 0;
     call: Call = new Call();
-    createdAt: Date = new Date();
+    lastUpdatedAt: Date = new Date();
+    status: OrderStatus = OrderStatus.Ready;
 }
 
 export class RobotBaseInfo {
@@ -331,10 +342,12 @@ export class UpdateCallDeviceRes extends BaseResponse {
 }
 
 export class RemoveCallDeviceReq {
-    callDeviceNo: number[] = [];
+    callDeviceNoList: number[] = [];
 }
 
-export class RemoveCallDeviceRes extends BaseResponse { }
+export class RemoveCallDeviceRes extends BaseResponse {
+    callList: Call[] = [];
+}
 
 // ManagementController
 export class GetRobotRecencyVersionRes extends BaseResponse {
@@ -367,6 +380,15 @@ export class RobotPauseReq {
 }
 
 export class RobotPauseRes extends BaseResponse {
+    robotDetailSummary: RobotDetailSummary = new RobotDetailSummary();
+}
+
+export class UpdateRobotNameReq {
+    robotNo: number = 0;
+    robotName: string = "";
+}
+
+export class UpdateRobotNameRes extends BaseResponse {
     robotDetailSummary: RobotDetailSummary = new RobotDetailSummary();
 }
 
